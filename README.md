@@ -1,136 +1,83 @@
-# Grafana data source plugin template
+# Grafana ALC Data Source
 
-This template is a starting point for building a Data Source Plugin for Grafana.
+A Grafana data source plugin for retrieving data from an Automated Logic
+WebCTRL building automation system.
 
-## What are Grafana data source plugins?
+The plugin provides a Grafana backend data source that communicates with
+WebCTRL using its SOAP web services. It allows WebCTRL data to be queried and
+displayed using normal Grafana dashboards and visualizations.
 
-Grafana supports a wide range of data sources, including Prometheus, MySQL, and even Datadog. There’s a good chance you can already visualize metrics from the systems you have set up. In some cases, though, you already have an in-house metrics solution that you’d like to add to your Grafana dashboards. Grafana Data Source Plugins enables integrating such solutions with Grafana.
+## Features
 
-## Getting started
+Current functionality includes:
 
-### Backend
+- WebCTRL SOAP authentication
+- Historical trend data queries
+- Present Value queries
+- Browsing the WebCTRL geographic tree
+- Grafana backend health checks
+- Caching of frequently requested values
+- Cache statistics for troubleshooting and diagnostics
 
-1. Update [Grafana plugin SDK for Go](https://grafana.com/developers/plugin-tools/key-concepts/backend-plugins/grafana-plugin-sdk-for-go) dependency to the latest minor version:
+The data source configuration requires the URL of the WebCTRL SOAP service and
+a WebCTRL username and password.
 
-   ```bash
-   go get -u github.com/grafana/grafana-plugin-sdk-go
-   go mod tidy
-   ```
+## WebCTRL SOAP Limitations
 
-2. Build plugin backend binaries for Linux, Windows and Darwin:
+There are some important limitations in the WebCTRL SOAP interface, particularly
+when retrieving historical trend data.
 
-   ```bash
-   mage -v
-   ```
+WebCTRL trend histories contain records other than actual point samples,
+including events such as:
 
-3. List all available Mage targets for additional commands:
+- time synchronization records
+- error records
+- other trend/history metadata records
 
-   ```bash
-   mage -l
-   ```
+The WebCTRL SOAP interface does not reliably distinguish or filter these records
+from normal trend samples when returning data.
 
-### Frontend
+As a result, these records may appear in Grafana as data points, frequently
+with a value of zero. These apparent zero values are not necessarily real
+measurements from the underlying point.
 
-1. Install dependencies
+This can be confusing when viewing trend data and should be kept in mind when
+interpreting graphs produced by this plugin.
 
-   ```bash
-   npm install
-   ```
+This behavior originates in the data returned by the WebCTRL SOAP interface,
+rather than Grafana itself.
 
-2. Build plugin in development mode and run in watch mode
+## Future Development
 
-   ```bash
-   npm run dev
-   ```
+The SOAP interface is increasingly limiting for this application.
 
-3. Build plugin in production mode
+Future versions of this plugin are expected to use **Cameron Vogt's WebCTRL REST
+API** instead of the native WebCTRL SOAP interface. The REST API provides a
+better foundation for retrieving and interpreting WebCTRL data and should allow
+several of the limitations described above to be eliminated.
 
-   ```bash
-   npm run build
-   ```
+The current SOAP implementation will remain useful for existing installations
+and as a reference implementation.
 
-4. Run the tests (using Jest)
+## Architecture
 
-   ```bash
-   # Runs the tests and watches for changes, requires git init first
-   npm run test
+The plugin consists of:
 
-   # Exits after running all the tests
-   npm run test:ci
-   ```
+- a React/TypeScript Grafana frontend
+- a Go Grafana backend plugin
+- the [`webctrl-soap-go`](https://github.com/wz2b/webctrl-soap-go) Go library for
+  communication with WebCTRL
 
-5. Spin up a Grafana instance and run the plugin inside it (using Docker)
+The backend performs WebCTRL requests and returns Grafana DataFrames to the
+frontend.
 
-   ```bash
-   npm run server
-   ```
+## Status
 
-6. Run the E2E tests (using Playwright)
+This project is under active development.
 
-   ```bash
-   # Spins up a Grafana instance first that we tests against
-   npm run server
+It was originally developed for older versions of Grafana and has been updated
+to work with current Grafana releases.
 
-   # If you wish to start a certain Grafana version. If not specified will use latest by default
-   GRAFANA_VERSION=11.3.0 npm run server
+## License
 
-   # Starts the tests
-   npm run e2e
-   ```
-
-7. Run the linter
-
-   ```bash
-   npm run lint
-
-   # or
-
-   npm run lint:fix
-   ```
-
-# Distributing your plugin
-
-When distributing a Grafana plugin either within the community or privately the plugin must be signed so the Grafana application can verify its authenticity. This can be done with the `@grafana/sign-plugin` package.
-
-_Note: It's not necessary to sign a plugin during development. The docker development environment that is scaffolded with `@grafana/create-plugin` caters for running the plugin without a signature._
-
-## Initial steps
-
-Before signing a plugin please read the Grafana [plugin publishing and signing criteria](https://grafana.com/legal/plugins/#plugin-publishing-and-signing-criteria) documentation carefully.
-
-`@grafana/create-plugin` has added the necessary commands and workflows to make signing and distributing a plugin via the grafana plugins catalog as straightforward as possible.
-
-Before signing a plugin for the first time please consult the Grafana [plugin signature levels](https://grafana.com/legal/plugins/#what-are-the-different-classifications-of-plugins) documentation to understand the differences between the types of signature level.
-
-1. Create a [Grafana Cloud account](https://grafana.com/signup).
-2. Make sure that the first part of the plugin ID matches the slug of your Grafana Cloud account.
-   - _You can find the plugin ID in the `plugin.json` file inside your plugin directory. For example, if your account slug is `acmecorp`, you need to prefix the plugin ID with `acmecorp-`._
-3. Create a Grafana Cloud API key with the `PluginPublisher` role.
-4. Keep a record of this API key as it will be required for signing a plugin
-
-## Signing a plugin
-
-### Using Github actions release workflow
-
-If the plugin is using the github actions supplied with `@grafana/create-plugin` signing a plugin is included out of the box. The [release workflow](./.github/workflows/release.yml) can prepare everything to make submitting your plugin to Grafana as easy as possible. Before being able to sign the plugin however a secret needs adding to the Github repository.
-
-1. Please navigate to "settings > secrets > actions" within your repo to create secrets.
-2. Click "New repository secret"
-3. Name the secret "GRAFANA_API_KEY"
-4. Paste your Grafana Cloud API key in the Secret field
-5. Click "Add secret"
-
-#### Push a version tag
-
-To trigger the workflow we need to push a version tag to github. This can be achieved with the following steps:
-
-1. Run `npm version <major|minor|patch>`
-2. Run `git push origin main --follow-tags`
-
-## Learn more
-
-Below you can find source code for existing app plugins and other related documentation.
-
-- [Basic data source plugin example](https://github.com/grafana/grafana-plugin-examples/tree/master/examples/datasource-basic#readme)
-- [`plugin.json` documentation](https://grafana.com/developers/plugin-tools/reference/plugin-json)
-- [How to sign a plugin?](https://grafana.com/developers/plugin-tools/publish-a-plugin/sign-a-plugin)
+See [LICENSE](LICENSE).
