@@ -19,9 +19,11 @@ services:
     cap_add:
       - SYS_PTRACE
     volumes:
+
       - ./grafana-alc/dist:/var/lib/grafana/plugins/wz2b-grafanaalc-datasource
       - ./grafana-alc/provisioning:/etc/grafana/provisioning
       - ./grafana-alc:/root/wz2b-grafanaalc-datasource
+
 
     environment:
       NODE_ENV: development

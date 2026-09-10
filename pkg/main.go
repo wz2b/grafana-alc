@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/autofrog/grafana-alc/pkg/plugin"
+	"github.com/wz2b/grafana-alc/pkg/plugin"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/datasource"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 )
