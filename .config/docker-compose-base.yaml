@@ -20,9 +20,9 @@ services:
       - SYS_PTRACE
     volumes:
 
-      - ./grafana-alc/dist:/var/lib/grafana/plugins/wz2b-grafanaalc-datasource
-      - ./grafana-alc/provisioning:/etc/grafana/provisioning
-      - ./grafana-alc:/root/wz2b-grafanaalc-datasource
+      - ./dist:/var/lib/grafana/plugins/wz2b-grafanaalc-datasource
+      - ./provisioning:/etc/grafana/provisioning
+      - .:/root/wz2b-grafanaalc-datasource
 
 
     environment:
