@@ -1,4 +1,4 @@
-module github.com/autofrog/grafana-alc
+module github.com/wz2b/grafana-alc
 
 go 1.26.5
 

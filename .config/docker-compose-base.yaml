@@ -1,7 +1,7 @@
 services:
   grafana:
     user: root
-    container_name: 'autofrog-grafanaalc-datasource'
+    container_name: 'wz2b-grafanaalc-datasource'
 
     build:
       context: .
@@ -19,13 +19,13 @@ services:
     cap_add:
       - SYS_PTRACE
     volumes:
-      - ../dist:/var/lib/grafana/plugins/autofrog-grafanaalc-datasource
-      - ../provisioning:/etc/grafana/provisioning
-      - ..:/root/autofrog-grafanaalc-datasource
+      - ./grafana-alc/dist:/var/lib/grafana/plugins/wz2b-grafanaalc-datasource
+      - ./grafana-alc/provisioning:/etc/grafana/provisioning
+      - ./grafana-alc:/root/wz2b-grafanaalc-datasource
 
     environment:
       NODE_ENV: development
-      GF_LOG_FILTERS: plugin.autofrog-grafanaalc-datasource:debug
+      GF_LOG_FILTERS: plugin.wz2b-grafanaalc-datasource:debug
       GF_LOG_LEVEL: debug
       GF_DATAPROXY_LOGGING: 1
-      GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: autofrog-grafanaalc-datasource
+      GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: wz2b-grafanaalc-datasource
