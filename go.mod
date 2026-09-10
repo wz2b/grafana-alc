@@ -2,7 +2,11 @@ module github.com/autofrog/grafana-alc
 
 go 1.26.5
 
-require github.com/grafana/grafana-plugin-sdk-go v0.296.4
+require (
+	github.com/grafana/grafana-plugin-sdk-go v0.296.4
+	github.com/patrickmn/go-cache v2.1.0+incompatible
+	github.com/wz2b/webctrl-soap-go v0.0.0-20260910195040-bee1827d3b6e
+)
 
 require (
 	github.com/BurntSushi/toml v1.6.0 // indirect
@@ -49,7 +53,6 @@ require (
 	github.com/olekukonko/errors v1.3.0 // indirect
 	github.com/olekukonko/ll v0.1.8 // indirect
 	github.com/olekukonko/tablewriter v1.1.4 // indirect
-	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pierrec/lz4/v4 v4.1.28 // indirect
 	github.com/prometheus/client_golang v1.24.1 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect

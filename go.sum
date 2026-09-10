@@ -212,6 +212,8 @@ github.com/unknwon/log v0.0.0-20200308114134-929b1006e34a/go.mod h1:1xEUf2abjfP9
 github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
 github.com/urfave/cli v1.22.17 h1:SYzXoiPfQjHBbkYxbew5prZHS1TOLT3ierW8SYLqtVQ=
 github.com/urfave/cli v1.22.17/go.mod h1:b0ht0aqgH/6pBYzzxURyrM4xXNgsoT/n2ZzwQiEhNVo=
+github.com/wz2b/webctrl-soap-go v0.0.0-20260910195040-bee1827d3b6e h1:uCGFygz4CJa7U3Tpt93apjELTfWKMpJ2o0nt09PvAPw=
+github.com/wz2b/webctrl-soap-go v0.0.0-20260910195040-bee1827d3b6e/go.mod h1:IcmpxnfrBHVRczFHnwUsw/S3Sj+CTFY2VJIqJTBa+4g=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.3.5/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1Zlc8k=

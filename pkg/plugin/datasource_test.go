@@ -8,7 +8,7 @@ import (
 )
 
 func TestQueryData(t *testing.T) {
-	ds := Datasource{}
+	ds := AlcGrafanaDataSourceInstance{}
 
 	resp, err := ds.QueryData(
 		context.Background(),
