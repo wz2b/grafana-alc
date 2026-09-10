@@ -1,176 +1,83 @@
-# Default build configuration by Grafana
+# Grafana ALC Data Source
 
-**This is an auto-generated directory and is not intended to be changed! ⚠️**
+A Grafana data source plugin for retrieving data from an Automated Logic
+WebCTRL building automation system.
 
-The `.config/` directory holds basic configuration for the different tools
-that are used to develop, test and build the project. In order to make it updates easier we ask you to
-not edit files in this folder to extend configuration.
+The plugin provides a Grafana backend data source that communicates with
+WebCTRL using its SOAP web services. It allows WebCTRL data to be queried and
+displayed using normal Grafana dashboards and visualizations.
 
-## How to extend the basic configs?
+## Features
 
-Bear in mind that you are doing it at your own risk, and that extending any of the basic configuration can lead
-to issues around working with the project.
+Current functionality includes:
 
-### Extending the ESLint config
+- WebCTRL SOAP authentication
+- Historical trend data queries
+- Present Value queries
+- Browsing the WebCTRL geographic tree
+- Grafana backend health checks
+- Caching of frequently requested values
+- Cache statistics for troubleshooting and diagnostics
 
-Edit the `eslint.config.mjs` file in the project root to extend the ESLint configuration. The following example disables deprecation notices for source files.
+The data source configuration requires the URL of the WebCTRL SOAP service and
+a WebCTRL username and password.
 
-**Example:**
+## WebCTRL SOAP Limitations
 
-```javascript
-import { defineConfig } from 'eslint/config';
-import baseConfig from './.config/eslint.config.mjs';
+There are some important limitations in the WebCTRL SOAP interface, particularly
+when retrieving historical trend data.
 
-export default defineConfig([
-  {
-    ignores: [
-      //...
-    ],
-  },
-  ...baseConfig,
-  {
-    files: ['src/**/*.{ts,tsx}'],
-    rules: {
-      '@typescript-eslint/no-deprecated': 'off',
-    },
-  },
-]);
-```
+WebCTRL trend histories contain records other than actual point samples,
+including events such as:
 
----
+- time synchronization records
+- error records
+- other trend/history metadata records
 
-### Extending the Prettier config
+The WebCTRL SOAP interface does not reliably distinguish or filter these records
+from normal trend samples when returning data.
 
-Edit the `.prettierrc.js` file in the project root in order to extend the Prettier configuration.
+As a result, these records may appear in Grafana as data points, frequently
+with a value of zero. These apparent zero values are not necessarily real
+measurements from the underlying point.
 
-**Example:**
+This can be confusing when viewing trend data and should be kept in mind when
+interpreting graphs produced by this plugin.
 
-```javascript
-module.exports = {
-  // Prettier configuration provided by Grafana scaffolding
-  ...require('./.config/.prettierrc.js'),
+This behavior originates in the data returned by the WebCTRL SOAP interface,
+rather than Grafana itself.
 
-  semi: false,
-};
-```
+## Future Development
 
----
+The SOAP interface is increasingly limiting for this application.
 
-### Extending the Jest config
+Future versions of this plugin are expected to use **Cameron Vogt's WebCTRL REST
+API** instead of the native WebCTRL SOAP interface. The REST API provides a
+better foundation for retrieving and interpreting WebCTRL data and should allow
+several of the limitations described above to be eliminated.
 
-There are two configuration in the project root that belong to Jest: `jest-setup.js` and `jest.config.js`.
+The current SOAP implementation will remain useful for existing installations
+and as a reference implementation.
 
-**`jest-setup.js`:** A file that is run before each test file in the suite is executed. We are using it to
-set up the Jest DOM for the testing library and to apply some polyfills. ([link to Jest docs](https://jestjs.io/docs/configuration#setupfilesafterenv-array))
+## Architecture
 
-**`jest.config.js`:** The main Jest configuration file that extends the Grafana recommended setup. ([link to Jest docs](https://jestjs.io/docs/configuration))
+The plugin consists of:
 
-#### ESM errors with Jest
+- a React/TypeScript Grafana frontend
+- a Go Grafana backend plugin
+- the [`webctrl-soap-go`](https://github.com/wz2b/webctrl-soap-go) Go library for
+  communication with WebCTRL
 
-A common issue with the current jest config involves importing an npm package that only offers an ESM build. These packages cause jest to error with `SyntaxError: Cannot use import statement outside a module`. To work around this, we provide a list of known packages to pass to the `[transformIgnorePatterns](https://jestjs.io/docs/configuration#transformignorepatterns-arraystring)` jest configuration property. If need be, this can be extended in the following way:
+The backend performs WebCTRL requests and returns Grafana DataFrames to the
+frontend.
 
-```javascript
-process.env.TZ = 'UTC';
-const { grafanaESModules, nodeModulesToTransform } = require('./config/jest/utils');
+## Status
 
-module.exports = {
-  // Jest configuration provided by Grafana
-  ...require('./.config/jest.config'),
-  // Inform jest to only transform specific node_module packages.
-  transformIgnorePatterns: [nodeModulesToTransform([...grafanaESModules, 'packageName'])],
-};
-```
+This project is under active development.
 
----
+It was originally developed for older versions of Grafana and has been updated
+to work with current Grafana releases.
 
-### Extending the TypeScript config
+## License
 
-Edit the `tsconfig.json` file in the project root in order to extend the TypeScript configuration.
-
-**Example:**
-
-```json
-{
-  "extends": "./.config/tsconfig.json",
-  "compilerOptions": {
-    "preserveConstEnums": true
-  }
-}
-```
-
----
-
-### Extending the Webpack config
-
-Follow these steps to extend the basic Webpack configuration that lives under `.config/`:
-
-#### 1. Create a new Webpack configuration file
-
-Create a new config file that is going to extend the basic one provided by Grafana.
-It can live in the project root, e.g. `webpack.config.ts`.
-
-#### 2. Merge the basic config provided by Grafana and your custom setup
-
-We are going to use [`webpack-merge`](https://github.com/survivejs/webpack-merge) for this.
-
-```typescript
-// webpack.config.ts
-import type { Configuration } from 'webpack';
-import { merge } from 'webpack-merge';
-import grafanaConfig, { type Env } from './.config/webpack/webpack.config';
-
-const config = async (env: Env): Promise<Configuration> => {
-  const baseConfig = await grafanaConfig(env);
-
-  return merge(baseConfig, {
-    // Add custom config here...
-    output: {
-      asyncChunks: true,
-    },
-  });
-};
-
-export default config;
-```
-
-#### 3. Update the `package.json` to use the new Webpack config
-
-We need to update the `scripts` in the `package.json` to use the extended Webpack configuration.
-
-**Update for `build`:**
-
-```diff
--"build": "webpack -c ./.config/webpack/webpack.config.ts --env production",
-+"build": "webpack -c ./webpack.config.ts --env production",
-```
-
-**Update for `dev`:**
-
-```diff
--"dev": "webpack -w -c ./.config/webpack/webpack.config.ts --env development",
-+"dev": "webpack -w -c ./webpack.config.ts --env development",
-```
-
-### Configure grafana image to use when running docker
-
-By default, `grafana-enterprise` will be used as the docker image for all docker related commands. If you want to override this behavior, simply alter the `docker-compose.yaml` by adding the following build arg `grafana_image`.
-
-**Example:**
-
-```yaml
-version: '3.7'
-
-services:
-  grafana:
-    extends:
-      file: .config/docker-compose-base.yaml
-      service: grafana
-    build:
-      args:
-        grafana_version: ${GRAFANA_VERSION:-9.1.2}
-        grafana_image: ${GRAFANA_IMAGE:-grafana}
-```
-
-In this example, we assign the environment variable `GRAFANA_IMAGE` to the build arg `grafana_image` with a default value of `grafana`. This will allow you to set the value while running the docker compose commands, which might be convenient in some scenarios.
-
----
+See [LICENSE](LICENSE).
