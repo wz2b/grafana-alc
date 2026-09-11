@@ -103,7 +103,15 @@ func (ds *AlcGrafanaDataSourceInstance) getAllF1JTrendData(
 	const pageSize = 10000
 	logger := backend.Logger.FromContext(ctx)
 
-	logger.Info("Fetching {}", metric)
+	logger.Info(
+		"F1J request time range",
+		"from", from,
+		"fromUTC", from.UTC(),
+		"fromUnixMilli", from.UnixMilli(),
+		"to", to,
+		"toUTC", to.UTC(),
+		"toUnixMilli", to.UnixMilli(),
+	)
 
 	var records []alcsoap.F1JTrendRecord
 	cursor := from
