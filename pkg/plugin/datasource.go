@@ -46,7 +46,7 @@ func (ds *AlcGrafanaDataSourceInstance) QueryData(ctx context.Context,
 
 			r, err := ds.getTrendData(ctx, query.RefID, query.TimeRange, alcQuery)
 
-			backend.Logger.Info("SOAP request is finished")
+			backend.Logger.Info("F1J SOAP request is finished")
 
 			if err == nil {
 				backend.Logger.Info("Returning result")

@@ -5,7 +5,7 @@ go 1.26.5
 require (
 	github.com/grafana/grafana-plugin-sdk-go v0.296.4
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/wz2b/webctrl-soap-go v0.0.0-20260910195040-bee1827d3b6e
+	github.com/wz2b/webctrl-soap-go v0.0.0-20260911172517-88080f1fa38a
 )
 
 require (
