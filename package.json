@@ -74,7 +74,7 @@
     "@grafana/ui": "13.1.0",
     "@grafana/schema": "13.1.0",
     "react": "^18.3.0",
-    "react-dom": "^18.3.0"
+    "react-dom": "^19.2.8"
   },
   "packageManager": "npm@11.19.0"
 }
